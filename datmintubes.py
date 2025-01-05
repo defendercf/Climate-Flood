@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 
 logistic_model = joblib.load("logistic_regression_model.pkl")
-knn_model = joblib.load("KKNCluster.pkl")
+knn_model = joblib.load("KNNCluster.pkl")
 scaler = joblib.load("scaler.pkl")
 
 st.title('Flood Prediction from Climate using Logistic Regression')
