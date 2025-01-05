@@ -3,6 +3,7 @@ import pandas as pd
 import joblib
 from sklearn.preprocessing import StandardScaler
 
+# Load the model and scaler
 model = joblib.load("logistic_regression_model.pkl")
 scaler = joblib.load("scaler.pkl")
 
@@ -23,19 +24,35 @@ with st.form(key='prediction_form'):
     submit_button = st.form_submit_button(label='Predict')
     
     if submit_button:
+        # Create a DataFrame from the input
         input_data = pd.DataFrame({
             'Tn': [Tn_input],
             'Tx': [Tx_input],
             'Tavg': [Tavg_input],
             'RH_avg': [RH_avg_input],
-            'RR': [RR_input],
+            'RR': [RR_input],  # Exclude from scaling
             'ff_x': [ff_x_input],
             'ddd_x': [ddd_x_input],
             'ff_avg': [ff_avg_input]
         })
-        input_data = scaler.transform(input_data)
-            
         
-        prediction = model.predict(input_data)
+        # Separate the features to scale and the feature to leave unscaled
+        features_to_scale = input_data.drop(columns=['RR'])
+        unscaled_feature = input_data['RR'].values.reshape(-1, 1)
+        
+        # Apply the scaling transformation
+        scaled_features = scaler.transform(features_to_scale)
+        
+        # Combine scaled and unscaled features
+        combined_features = pd.DataFrame(
+            np.hstack((scaled_features, unscaled_feature)),
+            columns=features_to_scale.columns.tolist() + ['RR']
+        )
+        
+        # Ensure the order of columns matches the model's expectation
+        combined_features = combined_features[['Tn', 'Tx', 'Tavg', 'RH_avg', 'ff_x', 'ddd_x', 'ff_avg', 'RR']]
+        
+        # Make a prediction
+        prediction = model.predict(combined_features)
         result = 'Flood' if prediction[0] == 1 else 'No Flood'
         st.write(f'Prediction: {result}')
