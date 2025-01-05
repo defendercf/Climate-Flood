@@ -40,7 +40,7 @@ with st.form(key='input_form'):
                 'ff_avg': [float(ff_avg_input)]
             })
             
-            scaled_input_data = scaler.transform(input_data)
+            scaled_input_data = input_data
             
             prediction = logistic_model.predict(scaled_input_data)
             flood_result = 'Flood' if prediction[0] == 1 else 'No Flood'
