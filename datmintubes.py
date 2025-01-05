@@ -19,7 +19,7 @@ with st.form(key="prediction_form"):
     RH_avg_input = st.text_input("RH_avg (Average Relative Humidity)")
     RR_input = st.text_input("RR (Rainfall)")
     ff_x_input = st.text_input("ff_x (Max Wind Speed)")
-    ddd_x_input = st.text_input("ddd_x (Wind Direction)")
+    ddd_x_input = st.text_input("ddd_x (Wind Direction at max speed)")
     ff_avg_input = st.text_input("ff_avg (Average Wind Speed)")
     
     submit_button = st.form_submit_button(label="Predict")
