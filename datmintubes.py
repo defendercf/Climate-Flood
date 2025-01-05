@@ -1,12 +1,8 @@
 import streamlit as st
 import pandas as pd
-import joblib
-import numpy as np
-from sklearn.preprocessing import StandardScaler
+import joblib 
 
-# Load the model and scaler
 model = joblib.load("logistic_regression_model.pkl")
-scaler = joblib.load("scaler.pkl")
 
 st.title('Flood Prediction from Climate using Logistic Regression')
 st.write("Application for predicting flood with specific provided data.")
@@ -25,38 +21,17 @@ with st.form(key='prediction_form'):
     submit_button = st.form_submit_button(label='Predict')
     
     if submit_button:
-        # Create a DataFrame from the input
         input_data = pd.DataFrame({
             'Tn': [Tn_input],
             'Tx': [Tx_input],
             'Tavg': [Tavg_input],
             'RH_avg': [RH_avg_input],
-            'RR': [RR_input],  # Exclude from scaling
+            'RR': [RR_input],
             'ff_x': [ff_x_input],
             'ddd_x': [ddd_x_input],
             'ff_avg': [ff_avg_input]
         })
         
-        # Separate the features to scale and the feature to leave unscaled
-        features_to_scale = input_data.drop(columns=['RR'])
-        unscaled_feature = input_data['RR'].values.reshape(-1, 1)  # Ensures it's a column vector
-        
-        # Apply the scaling transformation
-        scaled_features = scaler.transform(features_to_scale)
-        
-        # Combine scaled and unscaled features
-        combined_features = np.hstack((scaled_features, unscaled_feature))
-        
-        # Convert to DataFrame and ensure the order of columns matches the model's expectation
-        combined_features_df = pd.DataFrame(
-            combined_features,
-            columns=features_to_scale.columns.tolist() + ['RR']
-        )
-        
-        # Ensure the order of columns matches what the model expects
-        combined_features_df = combined_features_df[['Tn', 'Tx', 'Tavg', 'RH_avg', 'ff_x', 'ddd_x', 'ff_avg', 'RR']]
-        
-        # Make a prediction
-        prediction = model.predict(combined_features_df)
+        prediction = model.predict(input_data)
         result = 'Flood' if prediction[0] == 1 else 'No Flood'
         st.write(f'Prediction: {result}')
