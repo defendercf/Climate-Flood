@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 # Load the model and scaler
@@ -38,21 +39,24 @@ with st.form(key='prediction_form'):
         
         # Separate the features to scale and the feature to leave unscaled
         features_to_scale = input_data.drop(columns=['RR'])
-        unscaled_feature = input_data['RR'].values.reshape(-1, 1)
+        unscaled_feature = input_data['RR'].values.reshape(-1, 1)  # Ensures it's a column vector
         
         # Apply the scaling transformation
         scaled_features = scaler.transform(features_to_scale)
         
         # Combine scaled and unscaled features
-        combined_features = pd.DataFrame(
-            np.hstack((scaled_features, unscaled_feature)),
+        combined_features = np.hstack((scaled_features, unscaled_feature))
+        
+        # Convert to DataFrame and ensure the order of columns matches the model's expectation
+        combined_features_df = pd.DataFrame(
+            combined_features,
             columns=features_to_scale.columns.tolist() + ['RR']
         )
         
-        # Ensure the order of columns matches the model's expectation
-        combined_features = combined_features[['Tn', 'Tx', 'Tavg', 'RH_avg', 'ff_x', 'ddd_x', 'ff_avg', 'RR']]
+        # Ensure the order of columns matches what the model expects
+        combined_features_df = combined_features_df[['Tn', 'Tx', 'Tavg', 'RH_avg', 'ff_x', 'ddd_x', 'ff_avg', 'RR']]
         
         # Make a prediction
-        prediction = model.predict(combined_features)
+        prediction = model.predict(combined_features_df)
         result = 'Flood' if prediction[0] == 1 else 'No Flood'
         st.write(f'Prediction: {result}')
