@@ -33,12 +33,14 @@ with st.form(key='prediction_form'):
             'ddd_x': [ddd_x_input],
             'ff_avg': [ff_avg_input]
         })
-        features_to_scale = input_data.drop(columns=['RR'])
-        
-        scaled_features = scaler.transform(features_to_scale)
-        
-        scaled_input_data = pd.DataFrame(scaled_features, columns=features_to_scale.columns)
-        scaled_input_data['RR'] = input_data['RR'].values
+    features_to_scale = input_data.drop(columns=['RR'])
+    
+    scaled_features = scaler.transform(features_to_scale)
+    
+    scaled_input_data = pd.DataFrame(scaled_features, columns=features_to_scale.columns)
+    scaled_input_data['RR'] = input_data['RR'].values
+    scaled_input_data = scaled_input_data[input_data.columns]
+    
     
     prediction = model.predict(scaled_input_data)
     result = 'Flood' if prediction[0] == 1 else 'No Flood'
