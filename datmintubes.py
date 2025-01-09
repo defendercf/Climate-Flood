@@ -23,25 +23,29 @@ with st.form(key='prediction_form'):
     submit_button = st.form_submit_button(label='Predict')
     
     if submit_button:
-        input_data = pd.DataFrame({
-            'Tn': [Tn_input],
-            'Tx': [Tx_input],
-            'Tavg': [Tavg_input],
-            'RH_avg': [RH_avg_input],
-            'RR': [RR_input],
-            'ff_x': [ff_x_input],
-            'ddd_x': [ddd_x_input],
-            'ff_avg': [ff_avg_input]
-        })
-    features_to_scale = input_data.drop(columns=['RR'])
-    
-    scaled_features = scaler.transform(features_to_scale)
-    
-    scaled_input_data = pd.DataFrame(scaled_features, columns=features_to_scale.columns)
-    scaled_input_data['RR'] = input_data['RR'].values
-    scaled_input_data = scaled_input_data[input_data.columns]
-    
-    
-    prediction = model.predict(scaled_input_data)
-    result = 'Flood' if prediction[0] == 1 else 'No Flood'
-    st.write(f'Prediction: {result}')
+        try :
+            input_data = pd.DataFrame({
+                'Tn': [Tn_input],
+                'Tx': [Tx_input],
+                'Tavg': [Tavg_input],
+                'RH_avg': [RH_avg_input],
+                'RR': [RR_input],
+                'ff_x': [ff_x_input],
+                'ddd_x': [ddd_x_input],
+                'ff_avg': [ff_avg_input]
+            })
+            features_to_scale = input_data.drop(columns=['RR'])
+            
+            scaled_features = scaler.transform(features_to_scale)
+            
+            scaled_input_data = pd.DataFrame(scaled_features, columns=features_to_scale.columns)
+            scaled_input_data['RR'] = input_data['RR'].values
+            scaled_input_data = scaled_input_data[input_data.columns]
+            
+            
+            prediction = model.predict(scaled_input_data)
+            result = 'Flood' if prediction[0] == 1 else 'No Flood'
+            st.write(f'Prediction: {result}')
+
+        except Exception as e:
+            st.error(f"Error : {e}")
